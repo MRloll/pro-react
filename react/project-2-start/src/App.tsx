@@ -1,10 +1,13 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import ProductCard from './components/ProductCard';
 import Modal from './components/Ui/Modal';
-import { formInputsList, productList } from './data';
+import { colors, formInputsList, productList } from './data';
 import Button from './components/Ui/Button';
 import Input from './components/Ui/Input';
 import type { IProduct } from './interfaces';
+import { productValidation } from './validation';
+import ErrorMessage from './components/ErrorMessage';
+import CircleColor from './components/CircleColor';
 
 const App = () => {
   const defaultProduct = {
@@ -19,8 +22,14 @@ const App = () => {
     },
   };
   const [product, setProduct] = useState<IProduct>(defaultProduct);
+  const [errors, setErrors] = useState({
+    title: '',
+    description: '',
+    imageURL: '',
+    price: '',
+  });
 
-  let [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
 
   const renderProducts = productList.map((product) => (
     <ProductCard key={product.id} product={product} />
@@ -32,16 +41,16 @@ const App = () => {
       ...product,
       [name]: value,
     });
+
+    setErrors({
+      ...errors,
+      [name]: '',
+    });
   };
 
   const onCancel = () => {
     setProduct(defaultProduct);
     close();
-  };
-
-  const submitHandler = (e: FormEvent<HTMLFormElement>): void => {
-    e.preventDefault();
-    console.log(product);
   };
 
   function open() {
@@ -51,6 +60,30 @@ const App = () => {
   function close() {
     setIsOpen(false);
   }
+
+  const submitHandler = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    const { title, description, imageURL, price } = product;
+
+    const errors = productValidation({
+      title,
+      description,
+      imageURL,
+      price,
+    });
+
+    const hasErrorMsg =
+      Object.values(errors).some((value) => value === '') &&
+      Object.values(errors).every((value) => value === '');
+
+    if (!hasErrorMsg) {
+      setErrors(errors);
+      return;
+    }
+
+    //submit
+    console.log('sssssssssS', errors);
+  };
 
   const renderFormInputList = formInputsList.map((input) => (
     <div className="flex flex-col" key={input.id}>
@@ -67,7 +100,12 @@ const App = () => {
         name={input.name}
         type={input.type}
       />
+      <ErrorMessage msg={errors[input.name]} />
     </div>
+  ));
+
+  const renderProductColors = colors.map((color) => (
+    <CircleColor color={color} key={color} />
   ));
 
   return (
@@ -79,6 +117,9 @@ const App = () => {
       <Modal isOpen={isOpen} closeModal={close} title="Modal Title">
         <form onSubmit={submitHandler} className="space-y-2">
           {renderFormInputList}
+          <div className="flex gap-2 items-center my-2">
+            {renderProductColors}
+          </div>
           <div className="flex gap-2">
             <Button className="bg-indigo-500">Submit</Button>
             <Button className="bg-gray-300" onClick={onCancel}>

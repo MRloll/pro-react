@@ -1,11 +1,12 @@
-import type { ProductNameTypes } from "../types";
-
-export interface IProduct {
-  id?: string;
+export interface IInputs {
   title: string;
   description: string;
   imageURL: string;
   price: string;
+}
+
+export interface IProduct extends IInputs {
+  id?: string;
   colors: string[];
   category: {
     name: string;
@@ -15,7 +16,7 @@ export interface IProduct {
 
 export interface IFormInput {
   id: string;
-  name: ProductNameTypes;
+  name: keyof IInputs;
   label: string;
   type: string;
 }
