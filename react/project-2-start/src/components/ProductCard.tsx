@@ -6,10 +6,17 @@ import CircleColor from './CircleColor';
 
 interface IProps {
   product: IProduct;
+  setProductToEdit: (product: IProduct) => void;
+  openEditModal: () => void;
 }
 
-const ProductCard = ({ product }: IProps) => {
+const ProductCard = ({ product, setProductToEdit, openEditModal }: IProps) => {
   const { imageURL, price, description, title, colors, category } = product;
+  // handlers
+  const onEdit = () => {
+    setProductToEdit(product);
+    openEditModal();
+  };
   return (
     <div className="border rounded-md p-2 flex flex-col">
       <Image className="rounded-2xl" alt="asd" imageURL={imageURL} />
@@ -38,7 +45,9 @@ const ProductCard = ({ product }: IProps) => {
         >
           Delete
         </Button>
-        <Button className="bg-indigo-500">Edit</Button>
+        <Button className="bg-indigo-500" onClick={onEdit}>
+          Edit
+        </Button>
       </div>
     </div>
   );
