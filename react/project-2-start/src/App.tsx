@@ -1,19 +1,22 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import ProductCard from './components/ProductCard';
 import Modal from './components/Ui/Modal';
-import { colors, formInputsList, productList } from './data';
+import { categories, colors, formInputsList, productList } from './data';
 import Button from './components/Ui/Button';
 import Input from './components/Ui/Input';
 import type { IProduct } from './interfaces';
 import { productValidation } from './validation';
 import ErrorMessage from './components/ErrorMessage';
 import CircleColor from './components/CircleColor';
+import Select from './components/Ui/Select';
+import { v4 as uuid } from 'uuid';
 
 const App = () => {
   const defaultProduct = {
     title: '',
     description: '',
-    imageURL: '',
+    imageURL:
+      'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
     price: '',
     colors: [],
     category: {
@@ -21,17 +24,19 @@ const App = () => {
       imageURL: '',
     },
   };
+  const [products, setProducts] = useState<IProduct[]>(productList);
   const [product, setProduct] = useState<IProduct>(defaultProduct);
   const [errors, setErrors] = useState({
     title: '',
     description: '',
     imageURL: '',
     price: '',
+    colors: '',
   });
-
+  const [tempColors, setTempColors] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(true);
-
-  const renderProducts = productList.map((product) => (
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
+  const renderProducts = products.map((product) => (
     <ProductCard key={product.id} product={product} />
   ));
 
@@ -70,6 +75,7 @@ const App = () => {
       description,
       imageURL,
       price,
+      colors: tempColors,
     });
 
     const hasErrorMsg =
@@ -77,12 +83,26 @@ const App = () => {
       Object.values(errors).every((value) => value === '');
 
     if (!hasErrorMsg) {
-      setErrors(errors);
+      setErrors({
+        ...errors,
+        colors: errors.colors.toString(),
+      });
       return;
     }
 
     //submit
-    console.log('sssssssssS', errors);
+    setProducts((prev) => [
+      {
+        ...product,
+        colors: tempColors,
+        category: selectedCategory,
+        id: uuid(),
+      },
+      ...prev,
+    ]);
+    setTempColors([]);
+    setProduct(defaultProduct);
+    close();
   };
 
   const renderFormInputList = formInputsList.map((input) => (
@@ -105,7 +125,21 @@ const App = () => {
   ));
 
   const renderProductColors = colors.map((color) => (
-    <CircleColor color={color} key={color} />
+    <CircleColor
+      color={color}
+      key={color}
+      onClick={() => {
+        if (tempColors.includes(color)) {
+          setTempColors((prev) => prev.filter((c) => c !== color));
+          return;
+        }
+        setTempColors((prev) => [...prev, color]);
+        setErrors({
+          ...errors,
+          colors: '',
+        });
+      }}
+    />
   ));
 
   return (
@@ -120,6 +154,18 @@ const App = () => {
           <div className="flex gap-2 items-center my-2">
             {renderProductColors}
           </div>
+          <ErrorMessage msg={errors.colors} />
+          <div className="flex gap-2 items-center my-2">
+            {tempColors.map((color) => (
+              <span key={color} style={{ backgroundColor: color }}>
+                {color}
+              </span>
+            ))}
+          </div>
+          <Select
+            selected={selectedCategory}
+            setSelected={setSelectedCategory}
+          />
           <div className="flex gap-2">
             <Button className="bg-indigo-500">Submit</Button>
             <Button className="bg-gray-300" onClick={onCancel}>

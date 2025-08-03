@@ -1,23 +1,24 @@
-import Image from "./Image";
-import Button from "./Ui/Button";
-import type { IProduct } from "../interfaces";
-import { textSlicer } from "../utils/functions";
+import Image from './Image';
+import Button from './Ui/Button';
+import type { IProduct } from '../interfaces';
+import { textSlicer } from '../utils/functions';
+import CircleColor from './CircleColor';
 
 interface IProps {
   product: IProduct;
 }
 
 const ProductCard = ({ product }: IProps) => {
-  const { imageURL, price, description, title } = product;
+  const { imageURL, price, description, title, colors, category } = product;
   return (
     <div className="border rounded-md p-2 flex flex-col">
       <Image className="rounded-2xl" alt="asd" imageURL={imageURL} />
       <h3>{title} </h3>
       <p>{textSlicer(description, 50)}</p>
       <div className="flex gap-2 items-center my-2">
-        <span className="w-5 h-5 rounded-full bg-red-400"></span>
-        <span className="w-5 h-5 rounded-full bg-yellow-400"></span>
-        <span className="w-5 h-5 rounded-full bg-red-400"></span>
+        {colors.map((color) => (
+          <CircleColor color={color} key={color} />
+        ))}
       </div>
       <div className="flex items-center justify-between">
         <span>{price}</span>
@@ -25,19 +26,19 @@ const ProductCard = ({ product }: IProps) => {
         <Image
           className="rounded-full w-10 h-10"
           alt="asd"
-          imageURL="https://placehold.co/200x200"
+          imageURL={category.imageURL}
         />
       </div>
       <div className="flex gap-4 mt-5">
         <Button
           onClick={() => {
-            console.log("delete");
+            console.log('delete');
           }}
-          className="bg-red-500 "
+          className="bg-red-500"
         >
           Delete
         </Button>
-        <Button className="bg-indigo-500 ">Edit</Button>
+        <Button className="bg-indigo-500">Edit</Button>
       </div>
     </div>
   );

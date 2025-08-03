@@ -6,6 +6,7 @@ export const productValidation = (product: IInputs) => {
     description: '',
     imageURL: '',
     price: '',
+    colors: '',
   };
 
   const validUrl = /(https?:\/\/[^\s]+)/g.test(product.imageURL);
@@ -32,6 +33,11 @@ export const productValidation = (product: IInputs) => {
 
   if (!product.price.trim() || isNaN(Number(product.price))) {
     errors.price = 'Price not valid';
+  }
+
+  if (!product.colors.length) {
+    console.log('sssssssssssssss');
+    errors.colors = 'please select at least one color';
   }
 
   return errors;

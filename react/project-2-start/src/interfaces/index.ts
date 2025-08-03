@@ -3,6 +3,7 @@ export interface IInputs {
   description: string;
   imageURL: string;
   price: string;
+  colors: string[] | string;
 }
 
 export interface IProduct extends IInputs {
