@@ -8,6 +8,7 @@ import type { IProduct } from './interfaces';
 import { productValidation } from './validation';
 import ErrorMessage from './components/ErrorMessage';
 import CircleColor from './components/CircleColor';
+import { v4 as uuid } from 'uuid';
 
 const App = () => {
   const defaultProduct = {
@@ -21,7 +22,9 @@ const App = () => {
       imageURL: '',
     },
   };
+  const [products, setProducts] = useState<IProduct[]>(productList);
   const [product, setProduct] = useState<IProduct>(defaultProduct);
+  const [tempColors, setColors] = useState<string[]>([]);
   const [errors, setErrors] = useState({
     title: '',
     description: '',
@@ -31,7 +34,7 @@ const App = () => {
 
   const [isOpen, setIsOpen] = useState(true);
 
-  const renderProducts = productList.map((product) => (
+  const renderProducts = products.map((product) => (
     <ProductCard key={product.id} product={product} />
   ));
 
@@ -82,7 +85,14 @@ const App = () => {
     }
 
     //submit
-    console.log('sssssssssS', errors);
+    setProducts((prev) => [
+      ...prev,
+      { ...product, id: uuid(), colors: tempColors },
+    ]);
+
+    setProduct(defaultProduct);
+    setColors([]);
+    close();
   };
 
   const renderFormInputList = formInputsList.map((input) => (
@@ -105,7 +115,17 @@ const App = () => {
   ));
 
   const renderProductColors = colors.map((color) => (
-    <CircleColor color={color} key={color} />
+    <CircleColor
+      color={color}
+      key={color}
+      onClick={() => {
+        if (tempColors.includes(color)) {
+          setColors((prev) => prev.filter((item) => item != color));
+          return;
+        }
+        setColors((prev) => [...prev, color]);
+      }}
+    />
   ));
 
   return (
@@ -117,6 +137,16 @@ const App = () => {
       <Modal isOpen={isOpen} closeModal={close} title="Modal Title">
         <form onSubmit={submitHandler} className="space-y-2">
           {renderFormInputList}
+          <div className="flex gap-2 items-center my-2 space-x-1.5 flex-wrap">
+            {tempColors.map((color) => (
+              <span
+                style={{ backgroundColor: color }}
+                className="rounded-sm p-1 text-white"
+              >
+                {color}
+              </span>
+            ))}
+          </div>
           <div className="flex gap-2 items-center my-2">
             {renderProductColors}
           </div>
