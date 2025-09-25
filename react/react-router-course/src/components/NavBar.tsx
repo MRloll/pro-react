@@ -1,19 +1,30 @@
-import { Link } from "react-router";
+import { NavLink } from "react-router";
 
 interface IProps {}
 
 const NavBar = ({}: IProps) => {
   return (
     <nav className="bg-gray-800">
-      <ul>
+      <ul className="flex gap-6 justify-center ">
         <li>
-          <Link to="/">Home</Link>
+          <NavLink className="hover:text-teal-400" to="/">
+            Home
+          </NavLink>
         </li>
         <li>
-          <Link to="/about">About</Link>
+          <NavLink className="hover:text-teal-400" to="/about">
+            About
+          </NavLink>
         </li>
         <li>
-          <Link to="/contact">Contact</Link>
+          <NavLink className="hover:text-teal-400" to="/contact">
+            Contact
+          </NavLink>
+        </li>
+        <li>
+          <NavLink className="hover:text-teal-400" to="/learn">
+            learn
+          </NavLink>
         </li>
       </ul>
     </nav>
