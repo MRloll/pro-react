@@ -26,6 +26,11 @@ const NavBar = ({}: IProps) => {
             learn
           </NavLink>
         </li>
+        <li>
+          <NavLink className="hover:text-teal-400" to="/login">
+            login
+          </NavLink>
+        </li>
       </ul>
     </nav>
   );
